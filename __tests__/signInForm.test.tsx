@@ -1,54 +1,44 @@
 import React from 'react';
 import {act, fireEvent, render} from '@testing-library/react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SignInForm from '../src/Screens/SignInForm';
-import Home from '../src/Screens/Home';
-const Stack = createNativeStackNavigator();
 
-export type RootStackParamList = {
-  signInForm: undefined;
-  Home: undefined;
-};
+describe('Test for signInForm', () => {
+  it('should render', () => {
+    const {getAllByText} = render(<SignInForm />);
+    expect(getAllByText('Login').length).toBe(2);
+  });
 
-const singIn = (
-  <NavigationContainer>
-    <Stack.Navigator>
-      <Stack.Screen name="signInForm" component={SignInForm} />
-      <Stack.Screen name="Home" component={Home} />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+  it('should show error messages', () => {
+    const {getByTestId, getByText} = render(<SignInForm />);
+    fireEvent.press(getByTestId('SignIn.Button'));
+    getByText('Invalid username.');
+    getByText('Invalid password.');
+  });
 
-test('should render', () => {
-  const {getAllByText} = render(singIn);
-  expect(getAllByText('Login').length).toBe(2);
-});
-
-test('should show error messages', () => {
-  const {getByTestId, getByText} = render(singIn);
-  fireEvent.press(getByTestId('SignIn.Button'));
-  getByText('Invalid username.');
-  getByText('Invalid password.');
-});
-
-it('should show invalid username message', () => {
-  const {getByTestId, getByText, queryAllByText} = render(singIn);
-  fireEvent.changeText(getByTestId('SignIn.usernameInput'), 'wrong');
-  fireEvent.changeText(getByTestId('SignIn.passwordInput'), 'asd');
-  fireEvent.press(getByTestId('SignIn.Button'));
-  getByText('Invalid username.');
-  expect(queryAllByText('Invalid password.').length).toBe(0);
-});
-
-it('handle valid submission', () => {
-  fetch.mockResponseOnce(JSON.stringify({passes: true}));
-  const {getByTestId} = render(singIn);
-
-  act(() => {
-    /* fire events that update state */
-    fireEvent.changeText(getByTestId('SignIn.usernameInput'), 'asd');
+  it('should show invalid username message', () => {
+    const {getByTestId, getByText, queryAllByText} = render(<SignInForm />);
+    fireEvent.changeText(getByTestId('SignIn.usernameInput'), 'wrong');
     fireEvent.changeText(getByTestId('SignIn.passwordInput'), 'asd');
     fireEvent.press(getByTestId('SignIn.Button'));
+    getByText('Invalid username.');
+    expect(queryAllByText('Invalid password.').length).toBe(0);
+  });
+
+  it('should show invalid password message', () => {
+    const {getByTestId, getByText, queryAllByText} = render(<SignInForm />);
+    fireEvent.changeText(getByTestId('SignIn.usernameInput'), 'asd');
+    fireEvent.changeText(getByTestId('SignIn.passwordInput'), 'wrong');
+    fireEvent.press(getByTestId('SignIn.Button'));
+    getByText('Invalid password.');
+    expect(queryAllByText('Invalid username.').length).toBe(0);
+  });
+
+  it('handle valid submission', () => {
+    const {getByTestId} = render(<SignInForm />);
+    act(() => {
+      fireEvent.changeText(getByTestId('SignIn.usernameInput'), 'asd');
+      fireEvent.changeText(getByTestId('SignIn.passwordInput'), 'asd');
+      fireEvent.press(getByTestId('SignIn.Button'));
+    });
   });
 });
