@@ -7,9 +7,9 @@ import Button from '../Components/Button';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 
-interface Props extends StackScreenProps<RootStackParamList, 'signInForm'> {}
+//interface Props extends StackScreenProps<RootStackParamList, 'signInForm'> {}
 
-const SignInForm = ({navigation}: Props) => {
+const SignInForm = () => {
   const {username, password, submit} = useLoginFormState();
   let usernameErrorMsg = '';
   let passwordErrorMsg = '';
