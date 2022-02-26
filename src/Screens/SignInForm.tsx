@@ -4,21 +4,46 @@ import ErrorText from '../Components/ErrorText';
 import {useLoginFormState} from '../Hooks/useLoginFormState';
 import Input from '../Components/Input';
 import Button from '../Components/Button';
-import {StackScreenProps} from '@react-navigation/stack';
+import {StackNavigationProp, StackScreenProps} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
 
-interface Props extends StackScreenProps<RootStackParamList, 'signInForm'> {}
+export interface Props {
+  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
+}
 
 const SignInForm = ({navigation}: Props) => {
-  const {username, password, submit} = useLoginFormState();
+  const {
+    username,
+    password,
+    submit,
+    setSubmit,
+    isPasswordValid,
+    isUsernameValid,
+  } = useLoginFormState();
   let usernameErrorMsg = '';
   let passwordErrorMsg = '';
 
-  if (submit.value && !username.valid) {
+  const sendData = async () => {
+    setSubmit(true);
+
+    if (isUsernameValid && isPasswordValid) {
+      await fetch('https://jsonplaceholder.typicode.com/users', {
+        method: 'POST',
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+      console.log('jacky me chupa la paloma');
+      navigation.navigate('Home');
+    }
+  };
+
+  if (submit && !username.valid) {
     usernameErrorMsg = 'Invalid username.';
   }
 
-  if (submit.value && !password.valid) {
+  if (submit && !password.valid) {
     passwordErrorMsg = 'Invalid password.';
   }
 
@@ -42,11 +67,7 @@ const SignInForm = ({navigation}: Props) => {
         testID="SignIn.passwordInput"
       />
       <ErrorText messages={[usernameErrorMsg, passwordErrorMsg]} />
-      <Button
-        testID="SignIn.Button"
-        text="Login"
-        onPress={() => submit.set()}
-      />
+      <Button testID="SignIn.Button" text="Login" onPress={() => sendData()} />
     </KeyboardAvoidingView>
   );
 };
