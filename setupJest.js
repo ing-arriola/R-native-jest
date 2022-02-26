@@ -12,6 +12,8 @@ jest.mock("@react-navigation/native", () => {
     };
   });
 
+  global.fetch = jest.fn(() => Promise.resolve());
+
 jest.mock('react-native-reanimated', () => {
   const Reanimated = require('react-native-reanimated/mock');
 
